@@ -35,6 +35,7 @@ var BOTTOM_REGEX = new RegExp("([^ \\*\\d]+?)(?:" + POWER_OP + ")?(" + SAFE_POWE
  * 8 lbs 8 oz -- recognized as 8 lbs + 8 ounces
  */
 export default function parse(val) {
+  val = val.replace("²", "^2");
   if (!isString(val)) {
     val = val.toString();
   }

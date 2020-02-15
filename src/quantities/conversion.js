@@ -75,6 +75,37 @@ assign(Qty.prototype, {
     return target;
   },
 
+  convertUnit: function(base, target) {
+    const baseQty = Qty(base);
+    const targetQty = Qty(target);
+
+    if (baseQty.isCompatible(targetQty)) {
+      let finalNumerator = [...this.numerator];
+      let finalDenominator = [...this.denominator];
+
+      finalNumerator = finalNumerator.filter(numeratorUnit => {
+        return !baseQty.numerator.filter(x => x !== "<1>").includes(numeratorUnit);
+      })
+
+      finalNumerator.push(...targetQty.numerator.filter(x => x !== "<1>"));
+
+      finalDenominator = finalDenominator.filter(denominatorUnit => {
+        return !baseQty.denominator.filter(x => x !== "<1>").includes(denominatorUnit);
+      })
+
+      finalDenominator.push(...targetQty.denominator.filter(x => x !== "<1>"));
+
+      return Qty({
+        scalar: this.scalar * divSafe(baseQty.baseScalar, targetQty.baseScalar),
+        numerator: finalNumerator,
+        denominator: finalDenominator
+      })
+    }
+    else {
+      throwIncompatibleUnits(baseQty.units(), targetQty.units());
+    }
+  },
+
   // convert to base SI units
   // results of the conversion are cached so subsequent calls to this will be fast
   toBase: function() {

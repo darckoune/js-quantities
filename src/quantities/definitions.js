@@ -124,7 +124,7 @@ export var UNITS = {
   "<day>":  [["d","day","days"], 3600 * 24, "time", ["<second>"]],
   "<week>":  [["wk","week","weeks"], 7 * 3600 * 24, "time", ["<second>"]],
   "<fortnight>": [["fortnight","fortnights"], 1209600, "time", ["<second>"]],
-  "<year>":  [["y","yr","year","years","annum"], 31556926, "time", ["<second>"]],
+  "<year>":  [["an", "y","yr","year","years","annum"], 31556926, "time", ["<second>"]],
   "<decade>":[["decade","decades"], 315569260, "time", ["<second>"]],
   "<century>":[["century","centuries"], 3155692600, "time", ["<second>"]],
 
@@ -223,7 +223,7 @@ export var UNITS = {
   "<bps>" : [["bps"], 0.125, "information_rate", ["<byte>"], ["<second>"]],
 
   /* currency */
-  "<dollar>":[["USD","dollar"], 1.0, "currency", ["<dollar>"]],
+  "<dollar>":[["€", "USD","dollar"], 1.0, "currency", ["<dollar>"]],
   "<cents>" :[["cents"], 0.01, "currency", ["<dollar>"]],
 
   /* luminosity */
@@ -267,10 +267,12 @@ export var UNITS = {
   "<ppm>" :  [["ppm"],1e-6, "prefix_only", ["<1>"]],
   "<ppt>" :  [["ppt"],1e-9, "prefix_only", ["<1>"]],
   "<gross>" :  [["gr","gross"],144.0, "prefix_only", ["<dozen>","<dozen>"]],
-  "<decibel>"  : [["dB","decibel","decibels"], 1.0, "logarithmic", ["<decibel>"]]
+  "<decibel>"  : [["dB","decibel","decibels"], 1.0, "logarithmic", ["<decibel>"]],
+
+  "<kg-eq-co2>" : [["kgₑCO₂","kilogramEqCO2"], 1.0, "pollution", ["<kg-eq-co2>"]]
 };
 
-export var BASE_UNITS = ["<meter>","<kilogram>","<second>","<mole>", "<ampere>","<radian>","<kelvin>","<temp-K>","<byte>","<dollar>","<candela>","<each>","<steradian>","<decibel>"];
+export var BASE_UNITS = ["<meter>","<kilogram>","<second>","<mole>", "<ampere>","<radian>","<kelvin>","<temp-K>","<byte>","<dollar>","<candela>","<each>","<steradian>","<decibel>","<kg-eq-co2>"];
 
 export var UNITY = "<1>";
 export var UNITY_ARRAY = [UNITY];
