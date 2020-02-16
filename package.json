@@ -1,14 +1,10 @@
 {
-  "name": "js-quantities",
-  "main": "./build/quantities.js",
+  "name": "ts-quantities",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "readmeFilename": "README.md",
-  "description": "JavaScript library for quantity calculation and unit conversion",
-  "version": "1.7.4",
-  "homepage": "http://gentooboontoo.github.io/js-quantities/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gentooboontoo/js-quantities.git"
-  },
+  "description": "JavaScript and Typescript library for quantity calculation and unit conversion",
+  "version": "2.0.0",
   "keywords": [
     "conversion",
     "convert",
@@ -23,7 +19,9 @@
     "quantities",
     "temperature",
     "unit",
-    "units"
+    "units",
+    "javascript",
+    "typescript"
   ],
   "author": "Julien Sanchez <julien.sanchez@gmail.com>",
   "contributors": [
@@ -36,14 +34,8 @@
     "build": "tsc -p .",
     "watch": "tsc -w -p ."
   },
-  "bugs": {
-    "url": "https://github.com/gentooboontoo/js-quantities/issues"
-  },
   "devDependencies": {
-    "eslint": "^6.3.0",
-    "jasmine": "3.x",
     "jasmine-node": "^3.0.0",
-    "rollup": "~0.57",
     "typescript": "^3.7.5"
   }
 }
