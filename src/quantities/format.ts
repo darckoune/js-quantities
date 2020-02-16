@@ -113,7 +113,7 @@ export function format(this: Qty, targetUnits: string | Function, formatter: Fun
     }
   }
 
-  formatter = formatter || this.formatter;
+  formatter = formatter || Qty.formatter;
   var targetQty = this.to(targetUnits);
   return formatter.call(this, targetQty.scalar, targetQty.units());
 }

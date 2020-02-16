@@ -114,7 +114,6 @@ export class Qty {
   units = format.units;
   toString = format.toString;
   format = format.format;
-  formatter = format.defaultFormatter;
 
   kind = kind.kind;
 
@@ -128,7 +127,16 @@ export class Qty {
   static divSafe = utils.divSafe;
   static swiftConverter = conversion.swiftConverter;
   static Error = QtyError;
+
+  static get formatter(): (scalar: any, units: any) => string {
+    return globalFormatter;
+  }
+  static set formatter(f: (scalar: any, units: any) => string) {
+    globalFormatter = f;
+  }
 }
+
+let globalFormatter = format.defaultFormatter;
 
 /**
  * Asserts constructor arguments are valid
