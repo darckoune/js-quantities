@@ -1,16 +1,7 @@
-import { Qty, isQty } from "./constructor.js";
-import {
-  PREFIX_VALUES,
-  OUTPUT_MAP,
-  UNITY_ARRAY
-} from "./definitions.js";
-import {
-  compareArray,
-  isNumber,
-  isString,
-  round
-} from "./utils.js";
-import NestedMap from "./nested-map.js";
+import { Qty, isQty } from './constructor.js';
+import { PREFIX_VALUES, OUTPUT_MAP, UNITY_ARRAY } from './definitions.js';
+import { compareArray, isNumber, isString, round } from './utils.js';
+import NestedMap from './nested-map.js';
 
 /**
  * Default formatter
@@ -21,27 +12,26 @@ import NestedMap from "./nested-map.js";
  * @returns {string} formatted result
  */
 export function defaultFormatter(scalar, units) {
-  return (scalar + " " + units).trim();
+    return (scalar + ' ' + units).trim();
 }
-
 
 // returns the 'unit' part of the Unit object without the scalar
 export function units(this: Qty): string {
-  if (this._units !== undefined) {
-    return this._units;
-  }
+    if (this._units !== undefined) {
+        return this._units;
+    }
 
-  var numIsUnity = compareArray(this.numerator, UNITY_ARRAY);
-  var denIsUnity = compareArray(this.denominator, UNITY_ARRAY);
-  if (numIsUnity && denIsUnity) {
-    this._units = "";
-    return this._units;
-  }
+    var numIsUnity = compareArray(this.numerator, UNITY_ARRAY);
+    var denIsUnity = compareArray(this.denominator, UNITY_ARRAY);
+    if (numIsUnity && denIsUnity) {
+        this._units = '';
+        return this._units;
+    }
 
-  var numUnits = stringifyUnits(this.numerator);
-  var denUnits = stringifyUnits(this.denominator);
-  this._units = numUnits + (denIsUnity ? "" : ("/" + denUnits));
-  return this._units;
+    var numUnits = stringifyUnits(this.numerator);
+    var denUnits = stringifyUnits(this.denominator);
+    this._units = numUnits + (denIsUnity ? '' : '/' + denUnits);
+    return this._units;
 }
 
 /**
@@ -58,24 +48,29 @@ export function units(this: Qty): string {
  *
  * @returns {string} reparseable quantity as string
  */
-export function toString(this: Qty, targetUnitsOrMaxDecimalsOrPrec, maxDecimals?): string {
-  var targetUnits;
-  if (isNumber(targetUnitsOrMaxDecimalsOrPrec)) {
-    targetUnits = this.units();
-    maxDecimals = targetUnitsOrMaxDecimalsOrPrec;
-  }
-  else if (isString(targetUnitsOrMaxDecimalsOrPrec)) {
-    targetUnits = targetUnitsOrMaxDecimalsOrPrec;
-  }
-  else if (isQty(targetUnitsOrMaxDecimalsOrPrec)) {
-    return this.toPrec(targetUnitsOrMaxDecimalsOrPrec).toString(maxDecimals);
-  }
+export function toString(
+    this: Qty,
+    targetUnitsOrMaxDecimalsOrPrec,
+    maxDecimals?
+): string {
+    var targetUnits;
+    if (isNumber(targetUnitsOrMaxDecimalsOrPrec)) {
+        targetUnits = this.units();
+        maxDecimals = targetUnitsOrMaxDecimalsOrPrec;
+    } else if (isString(targetUnitsOrMaxDecimalsOrPrec)) {
+        targetUnits = targetUnitsOrMaxDecimalsOrPrec;
+    } else if (isQty(targetUnitsOrMaxDecimalsOrPrec)) {
+        return this.toPrec(targetUnitsOrMaxDecimalsOrPrec).toString(
+            maxDecimals
+        );
+    }
 
-  var out = this.to(targetUnits);
+    var out = this.to(targetUnits);
 
-  var outScalar = maxDecimals !== undefined ? round(out.scalar, maxDecimals) : out.scalar;
-  out = (outScalar + " " + out.units()).trim();
-  return out;
+    var outScalar =
+        maxDecimals !== undefined ? round(out.scalar, maxDecimals) : out.scalar;
+    out = (outScalar + ' ' + out.units()).trim();
+    return out;
 }
 
 /**
@@ -105,17 +100,21 @@ export function toString(this: Qty, targetUnitsOrMaxDecimalsOrPrec, maxDecimals?
  *
  * @returns {string} quantity as string
  */
-export function format(this: Qty, targetUnits: string | Function, formatter: Function) {
-  if (arguments.length === 1) {
-    if (typeof targetUnits === "function") {
-      formatter = targetUnits;
-      targetUnits = undefined;
+export function format(
+    this: Qty,
+    targetUnits: string | Function,
+    formatter: Function
+) {
+    if (arguments.length === 1) {
+        if (typeof targetUnits === 'function') {
+            formatter = targetUnits;
+            targetUnits = undefined;
+        }
     }
-  }
 
-  formatter = formatter || Qty.formatter;
-  var targetQty = this.to(targetUnits);
-  return formatter.call(this, targetQty.scalar, targetQty.units());
+    formatter = formatter || Qty.formatter;
+    var targetQty = this.to(targetUnits);
+    return formatter.call(this, targetQty.scalar, targetQty.units());
 }
 
 var stringifiedUnitsCache = new NestedMap();
@@ -128,57 +127,56 @@ var stringifiedUnitsCache = new NestedMap();
  *
  */
 function stringifyUnits(units) {
+    var stringified = stringifiedUnitsCache.get(units);
+    if (stringified) {
+        return stringified;
+    }
 
-  var stringified = stringifiedUnitsCache.get(units);
-  if (stringified) {
+    var isUnity = compareArray(units, UNITY_ARRAY);
+    if (isUnity) {
+        stringified = '1';
+    } else {
+        stringified = simplify(getOutputNames(units)).join('*');
+    }
+
+    // Cache result
+    stringifiedUnitsCache.set(units, stringified);
+
     return stringified;
-  }
-
-  var isUnity = compareArray(units, UNITY_ARRAY);
-  if (isUnity) {
-    stringified = "1";
-  }
-  else {
-    stringified = simplify(getOutputNames(units)).join("*");
-  }
-
-  // Cache result
-  stringifiedUnitsCache.set(units, stringified);
-
-  return stringified;
 }
 
 function getOutputNames(units) {
-  var unitNames = [], token, tokenNext;
-  for (var i = 0; i < units.length; i++) {
-    token = units[i];
-    tokenNext = units[i + 1];
-    if (PREFIX_VALUES[token]) {
-      unitNames.push(OUTPUT_MAP[token] + OUTPUT_MAP[tokenNext]);
-      i++;
+    var unitNames = [],
+        token,
+        tokenNext;
+    for (var i = 0; i < units.length; i++) {
+        token = units[i];
+        tokenNext = units[i + 1];
+        if (PREFIX_VALUES[token]) {
+            unitNames.push(OUTPUT_MAP[token] + OUTPUT_MAP[tokenNext]);
+            i++;
+        } else {
+            unitNames.push(OUTPUT_MAP[token]);
+        }
     }
-    else {
-      unitNames.push(OUTPUT_MAP[token]);
-    }
-  }
-  return unitNames;
+    return unitNames;
 }
 
 function simplify(units) {
-  // this turns ['s','m','s'] into ['s2','m']
+    // this turns ['s','m','s'] into ['s2','m']
 
-  var unitCounts = units.reduce(function(acc, unit) {
-    var unitCounter = acc[unit];
-    if (!unitCounter) {
-      acc.push(unitCounter = acc[unit] = [unit, 0]);
-    }
+    var unitCounts = units.reduce(function(acc, unit) {
+        var unitCounter = acc[unit];
+        if (!unitCounter) {
+            acc.push((unitCounter = acc[unit] = [unit, 0]));
+        }
 
-    unitCounter[1]++;
+        unitCounter[1]++;
 
-    return acc;
-  }, []);
+        return acc;
+    }, []);
 
-  return unitCounts.map(function(unitCount) {
-    return unitCount[0] + (unitCount[1] > 1 ? unitCount[1] : "");
-  });
+    return unitCounts.map(function(unitCount) {
+        return unitCount[0] + (unitCount[1] > 1 ? unitCount[1] : '');
+    });
 }

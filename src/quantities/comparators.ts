@@ -1,25 +1,25 @@
 import { Qty } from './constructor';
-import { isString } from "./utils";
-import { throwIncompatibleUnits } from "./error";
+import { isString } from './utils';
+import { throwIncompatibleUnits } from './error';
 
 export function eq(this: Qty, other) {
-  return this.compareTo(other) === 0;
+    return this.compareTo(other) === 0;
 }
 
 export function lt(this: Qty, other) {
-  return this.compareTo(other) === -1;
+    return this.compareTo(other) === -1;
 }
 
 export function lte(this: Qty, other) {
-  return this.eq(other) || this.lt(other);
+    return this.eq(other) || this.lt(other);
 }
 
 export function gt(this: Qty, other) {
-  return this.compareTo(other) === 1;
+    return this.compareTo(other) === 1;
 }
 
 export function gte(this: Qty, other) {
-  return this.eq(other) || this.gt(other);
+    return this.eq(other) || this.gt(other);
 }
 
 // Compare two Qty objects. Throws an exception if they are not of compatible types.
@@ -35,27 +35,24 @@ export function gte(this: Qty, other) {
 //
 //   If including inverses in the sort is needed, I suggest writing: Qty.sort(qtyArray,units)
 export function compareTo(this: Qty, other) {
-  if (isString(other)) {
-    return this.compareTo(new Qty(other));
-  }
-  if (!this.isCompatible(other)) {
-    throwIncompatibleUnits(this.units(), other.units());
-  }
-  if (this.baseScalar < other.baseScalar) {
-    return -1;
-  }
-  else if (this.baseScalar === other.baseScalar) {
-    return 0;
-  }
-  else if (this.baseScalar > other.baseScalar) {
-    return 1;
-  }
+    if (isString(other)) {
+        return this.compareTo(new Qty(other));
+    }
+    if (!this.isCompatible(other)) {
+        throwIncompatibleUnits(this.units(), other.units());
+    }
+    if (this.baseScalar < other.baseScalar) {
+        return -1;
+    } else if (this.baseScalar === other.baseScalar) {
+        return 0;
+    } else if (this.baseScalar > other.baseScalar) {
+        return 1;
+    }
 }
 
 // Return true if quantities and units match
 // Unit("100 cm").same(Unit("100 cm"))  # => true
 // Unit("100 cm").same(Unit("1 m"))     # => false
 export function same(this: Qty, other) {
-  return (this.scalar === other.scalar) && (this.units() === other.units());
+    return this.scalar === other.scalar && this.units() === other.units();
 }
-

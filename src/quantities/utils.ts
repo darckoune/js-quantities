@@ -6,7 +6,7 @@
  * @returns {boolean} true if value is a string, false otherwise
  */
 export function isString(value) {
-  return typeof value === "string" || value instanceof String;
+    return typeof value === 'string' || value instanceof String;
 }
 
 /*
@@ -23,15 +23,15 @@ var isFiniteImpl = Number.isFinite || window.isFinite;
  * @returns {boolean} true if value is a number, false otherwise
  */
 export function isNumber(value) {
-  // Number.isFinite allows not to consider NaN or '1' as numbers
-  return isFiniteImpl(value);
+    // Number.isFinite allows not to consider NaN or '1' as numbers
+    return isFiniteImpl(value);
 }
 
 /*
  * Identity function
  */
 export function identity(value) {
-  return value;
+    return value;
 }
 
 /**
@@ -43,27 +43,27 @@ export function identity(value) {
  * @returns {string[]} a new array of strings without duplicates
  */
 export function uniq(strings) {
-  var seen = {};
-  return strings.filter(function(item) {
-    return seen.hasOwnProperty(item) ? false : (seen[item] = true);
-  });
+    var seen = {};
+    return strings.filter(function(item) {
+        return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+    });
 }
 
 export function compareArray(array1, array2) {
-  if (array2.length !== array1.length) {
-    return false;
-  }
-  for (var i = 0; i < array1.length; i++) {
-    if (array2[i].compareArray) {
-      if (!array2[i].compareArray(array1[i])) {
+    if (array2.length !== array1.length) {
         return false;
-      }
     }
-    if (array2[i] !== array1[i]) {
-      return false;
+    for (var i = 0; i < array1.length; i++) {
+        if (array2[i].compareArray) {
+            if (!array2[i].compareArray(array1[i])) {
+                return false;
+            }
+        }
+        if (array2[i] !== array1[i]) {
+            return false;
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 /**
@@ -75,14 +75,15 @@ export function compareArray(array1, array2) {
  * @returns {number} result
  */
 export function mulSafe(...args) {
-  var result = 1, decimals = 0;
-  for (var i = 0; i < args.length; i++) {
-    var arg = args[i];
-    decimals = decimals + getFractional(arg);
-    result *= arg;
-  }
+    var result = 1,
+        decimals = 0;
+    for (var i = 0; i < args.length; i++) {
+        var arg = args[i];
+        decimals = decimals + getFractional(arg);
+        result *= arg;
+    }
 
-  return decimals !== 0 ? round(result, decimals) : result;
+    return decimals !== 0 ? round(result, decimals) : result;
 }
 
 /**
@@ -94,14 +95,14 @@ export function mulSafe(...args) {
  * @param {number} den Denominator
  */
 export function divSafe(num, den) {
-  if (den === 0) {
-    throw new Error("Divide by zero");
-  }
+    if (den === 0) {
+        throw new Error('Divide by zero');
+    }
 
-  var factor = Math.pow(10, getFractional(den));
-  var invDen = factor / (factor * den);
+    var factor = Math.pow(10, getFractional(den));
+    var invDen = factor / (factor * den);
 
-  return mulSafe(num, invDen);
+    return mulSafe(num, invDen);
 }
 
 /**
@@ -113,21 +114,21 @@ export function divSafe(num, den) {
  * @returns {number} rounded number
  */
 export function round(val, decimals) {
-  return Math.round(val * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    return Math.round(val * Math.pow(10, decimals)) / Math.pow(10, decimals);
 }
 
 function getFractional(num) {
-  // Check for NaNs or Infinities
-  if (!isFinite(num)) {
-    return 0;
-  }
+    // Check for NaNs or Infinities
+    if (!isFinite(num)) {
+        return 0;
+    }
 
-  // Faster than parsing strings
-  // http://jsperf.com/count-decimals/2
-  var count = 0;
-  while (num % 1 !== 0) {
-    num *= 10;
-    count++;
-  }
-  return count;
+    // Faster than parsing strings
+    // http://jsperf.com/count-decimals/2
+    var count = 0;
+    while (num % 1 !== 0) {
+        num *= 10;
+        count++;
+    }
+    return count;
 }

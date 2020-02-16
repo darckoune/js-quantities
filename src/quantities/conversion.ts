@@ -1,14 +1,8 @@
-import { Qty } from "./constructor.js";
-import { PREFIX_VALUES, UNIT_VALUES } from "./definitions.js";
-import {toDegrees, toTemp, toTempK } from "./temperature.js";
-import {
-  divSafe,
-  identity,
-  isNumber,
-  isString,
-  mulSafe
-} from "./utils.js";
-import QtyError, { throwIncompatibleUnits } from "./error.js";
+import { Qty } from './constructor.js';
+import { PREFIX_VALUES, UNIT_VALUES } from './definitions.js';
+import { toDegrees, toTemp, toTempK } from './temperature.js';
+import { divSafe, identity, isNumber, isString, mulSafe } from './utils.js';
+import QtyError, { throwIncompatibleUnits } from './error.js';
 
 /**
  * Converts to other compatible units.
@@ -27,77 +21,79 @@ import QtyError, { throwIncompatibleUnits } from "./error.js";
  * weight.to(Qty("3 g")); // => Qty("25000 g"); // scalar of passed Qty is ignored
  */
 export function to(this: Qty, other) {
-  var cached, target;
+    var cached, target;
 
-  if (other === undefined || other === null) {
-    return this;
-  }
-
-  if (!isString(other)) {
-    return this.to(other.units());
-  }
-
-  cached = this._conversionCache[other];
-  if (cached) {
-    return cached;
-  }
-
-  // Instantiating target to normalize units
-  target = new Qty(other);
-  if (target.units() === this.units()) {
-    return this;
-  }
-
-  if (!this.isCompatible(target)) {
-    if (this.isInverse(target)) {
-      target = this.inverse().to(other);
+    if (other === undefined || other === null) {
+        return this;
     }
-    else {
-      throwIncompatibleUnits(this.units(), target.units());
-    }
-  }
-  else {
-    if (target.isTemperature()) {
-      target = toTemp(this,target);
-    }
-    else if (target.isDegrees()) {
-      target = toDegrees(this,target);
-    }
-    else {
-      var q = divSafe(this.baseScalar, target.baseScalar);
-      target = new Qty({"scalar": q, "numerator": target.numerator, "denominator": target.denominator});
-    }
-  }
 
-  this._conversionCache[other] = target;
-  return target;
+    if (!isString(other)) {
+        return this.to(other.units());
+    }
+
+    cached = this._conversionCache[other];
+    if (cached) {
+        return cached;
+    }
+
+    // Instantiating target to normalize units
+    target = new Qty(other);
+    if (target.units() === this.units()) {
+        return this;
+    }
+
+    if (!this.isCompatible(target)) {
+        if (this.isInverse(target)) {
+            target = this.inverse().to(other);
+        } else {
+            throwIncompatibleUnits(this.units(), target.units());
+        }
+    } else {
+        if (target.isTemperature()) {
+            target = toTemp(this, target);
+        } else if (target.isDegrees()) {
+            target = toDegrees(this, target);
+        } else {
+            var q = divSafe(this.baseScalar, target.baseScalar);
+            target = new Qty({
+                scalar: q,
+                numerator: target.numerator,
+                denominator: target.denominator
+            });
+        }
+    }
+
+    this._conversionCache[other] = target;
+    return target;
 }
 
 // convert to base SI units
 // results of the conversion are cached so subsequent calls to this will be fast
 export function toBase(this: Qty) {
-  if (this.isBase()) {
-    return this;
-  }
+    if (this.isBase()) {
+        return this;
+    }
 
-  if (this.isTemperature()) {
-    return toTempK(this);
-  }
+    if (this.isTemperature()) {
+        return toTempK(this);
+    }
 
-  var cached = baseUnitCache[this.units()];
-  if (!cached) {
-    cached = toBaseUnits(this.numerator,this.denominator);
-    baseUnitCache[this.units()] = cached;
-  }
-  return cached.mul(this.scalar);
+    var cached = baseUnitCache[this.units()];
+    if (!cached) {
+        cached = toBaseUnits(this.numerator, this.denominator);
+        baseUnitCache[this.units()] = cached;
+    }
+    return cached.mul(this.scalar);
 }
 
 // Converts the unit back to a float if it is unitless.  Otherwise raises an exception
 export function toFloat(this: Qty) {
-  if (this.isUnitless()) {
-    return this.scalar;
-  }
-  throw new QtyError("Can't convert to Float unless unitless.  Use Unit#scalar");
+    if (this.isUnitless()) {
+        return this.scalar;
+    }
+    throw new QtyError(
+        "Can't convert to Float unless unitless.  Use Unit#scalar"
+    );
 }
 
 /**
@@ -117,32 +113,31 @@ export function toFloat(this: Qty) {
  *
  */
 export function toPrec(this: Qty, precQuantity: number | string | Qty) {
-  let precQty: Qty;
-  if (isString(precQuantity)) {
-    precQty = new Qty(precQuantity);
-  } else if (isNumber(precQuantity)) {
-    precQty = new Qty(precQuantity + " " + this.units());
-  } else {
-    precQty = precQuantity as Qty;
-  }
+    let precQty: Qty;
+    if (isString(precQuantity)) {
+        precQty = new Qty(precQuantity);
+    } else if (isNumber(precQuantity)) {
+        precQty = new Qty(precQuantity + ' ' + this.units());
+    } else {
+        precQty = precQuantity as Qty;
+    }
 
-  if (!this.isUnitless()) {
-    precQty = precQty.to(this.units());
-  }
-  else if (!precQty.isUnitless()) {
-    throwIncompatibleUnits(this.units(), precQty.units());
-  }
+    if (!this.isUnitless()) {
+        precQty = precQty.to(this.units());
+    } else if (!precQty.isUnitless()) {
+        throwIncompatibleUnits(this.units(), precQty.units());
+    }
 
-  if (precQty.scalar === 0) {
-    throw new QtyError("Divide by zero");
-  }
+    if (precQty.scalar === 0) {
+        throw new QtyError('Divide by zero');
+    }
 
-  var precRoundedResult = mulSafe(
-    Math.round(this.scalar / precQty.scalar),
-    precQty.scalar
-  );
+    var precRoundedResult = mulSafe(
+        Math.round(this.scalar / precQty.scalar),
+        precQty.scalar
+    );
 
-  return new Qty(precRoundedResult + this.units());
+    return new Qty(precRoundedResult + this.units());
 }
 
 /**
@@ -168,95 +163,91 @@ export function toPrec(this: Qty, precQuantity: number | string | Qty) {
  *
  */
 export function swiftConverter(srcUnits, dstUnits) {
-  var srcQty = new Qty(srcUnits);
-  var dstQty = new Qty(dstUnits);
+    var srcQty = new Qty(srcUnits);
+    var dstQty = new Qty(dstUnits);
 
-  if (srcQty.eq(dstQty)) {
-    return identity;
-  }
-
-  var convert;
-  if (!srcQty.isTemperature()) {
-    convert = function(value) {
-      return value * srcQty.baseScalar / dstQty.baseScalar;
-    };
-  }
-  else {
-    convert = function(value) {
-      // TODO Not optimized
-      return srcQty.mul(value).to(dstQty).scalar;
-    };
-  }
-
-  return function converter(value) {
-    var i, length, result;
-    if (!Array.isArray(value)) {
-      return convert(value);
+    if (srcQty.eq(dstQty)) {
+        return identity;
     }
-    else {
-      length = value.length;
-      result = [];
-      for (i = 0; i < length; i++) {
-        result.push(convert(value[i]));
-      }
-      return result;
+
+    var convert;
+    if (!srcQty.isTemperature()) {
+        convert = function(value) {
+            return (value * srcQty.baseScalar) / dstQty.baseScalar;
+        };
+    } else {
+        convert = function(value) {
+            // TODO Not optimized
+            return srcQty.mul(value).to(dstQty).scalar;
+        };
     }
-  };
+
+    return function converter(value) {
+        var i, length, result;
+        if (!Array.isArray(value)) {
+            return convert(value);
+        } else {
+            length = value.length;
+            result = [];
+            for (i = 0; i < length; i++) {
+                result.push(convert(value[i]));
+            }
+            return result;
+        }
+    };
 }
 
 var baseUnitCache = {};
 
-function toBaseUnits(numerator,denominator) {
-  var num = [];
-  var den = [];
-  var q = 1;
-  var unit;
-  for (var i = 0; i < numerator.length; i++) {
-    unit = numerator[i];
-    if (PREFIX_VALUES[unit]) {
-      // workaround to fix
-      // 0.1 * 0.1 => 0.010000000000000002
-      q = mulSafe(q, PREFIX_VALUES[unit]);
-    }
-    else {
-      if (UNIT_VALUES[unit]) {
-        q *= UNIT_VALUES[unit].scalar;
+function toBaseUnits(numerator, denominator) {
+    var num = [];
+    var den = [];
+    var q = 1;
+    var unit;
+    for (var i = 0; i < numerator.length; i++) {
+        unit = numerator[i];
+        if (PREFIX_VALUES[unit]) {
+            // workaround to fix
+            // 0.1 * 0.1 => 0.010000000000000002
+            q = mulSafe(q, PREFIX_VALUES[unit]);
+        } else {
+            if (UNIT_VALUES[unit]) {
+                q *= UNIT_VALUES[unit].scalar;
 
-        if (UNIT_VALUES[unit].numerator) {
-          num.push(UNIT_VALUES[unit].numerator);
+                if (UNIT_VALUES[unit].numerator) {
+                    num.push(UNIT_VALUES[unit].numerator);
+                }
+                if (UNIT_VALUES[unit].denominator) {
+                    den.push(UNIT_VALUES[unit].denominator);
+                }
+            }
         }
-        if (UNIT_VALUES[unit].denominator) {
-          den.push(UNIT_VALUES[unit].denominator);
-        }
-      }
     }
-  }
-  for (var j = 0; j < denominator.length; j++) {
-    unit = denominator[j];
-    if (PREFIX_VALUES[unit]) {
-      q /= PREFIX_VALUES[unit];
-    }
-    else {
-      if (UNIT_VALUES[unit]) {
-        q /= UNIT_VALUES[unit].scalar;
+    for (var j = 0; j < denominator.length; j++) {
+        unit = denominator[j];
+        if (PREFIX_VALUES[unit]) {
+            q /= PREFIX_VALUES[unit];
+        } else {
+            if (UNIT_VALUES[unit]) {
+                q /= UNIT_VALUES[unit].scalar;
 
-        if (UNIT_VALUES[unit].numerator) {
-          den.push(UNIT_VALUES[unit].numerator);
+                if (UNIT_VALUES[unit].numerator) {
+                    den.push(UNIT_VALUES[unit].numerator);
+                }
+                if (UNIT_VALUES[unit].denominator) {
+                    num.push(UNIT_VALUES[unit].denominator);
+                }
+            }
         }
-        if (UNIT_VALUES[unit].denominator) {
-          num.push(UNIT_VALUES[unit].denominator);
-        }
-      }
     }
-  }
 
-  // Flatten
-  num = num.reduce(function(a,b) {
-    return a.concat(b);
-  }, []);
-  den = den.reduce(function(a,b) {
-    return a.concat(b);
-  }, []);
+    // Flatten
+    num = num.reduce(function(a, b) {
+        return a.concat(b);
+    }, []);
+    den = den.reduce(function(a, b) {
+        return a.concat(b);
+    }, []);
 
-  return new Qty({"scalar": q, "numerator": num, "denominator": den});
+    return new Qty({ scalar: q, numerator: num, denominator: den });
 }
