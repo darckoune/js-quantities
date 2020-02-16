@@ -32,7 +32,8 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "jasmine-node spec/"
+    "test": "jasmine-node spec/",
+    "build": "tsc"
   },
   "bugs": {
     "url": "https://github.com/gentooboontoo/js-quantities/issues"
@@ -40,6 +41,7 @@
   "devDependencies": {
     "eslint": "^6.3.0",
     "jasmine": "3.x",
-    "rollup": "~0.57"
+    "rollup": "~0.57",
+    "typescript": "^3.7.5"
   }
 }

@@ -80,10 +80,10 @@ export function assign(target, properties) {
  *
  * @returns {number} result
  */
-export function mulSafe() {
+export function mulSafe(...args) {
   var result = 1, decimals = 0;
-  for (var i = 0; i < arguments.length; i++) {
-    var arg = arguments[i];
+  for (var i = 0; i < args.length; i++) {
+    var arg = args[i];
     decimals = decimals + getFractional(arg);
     result *= arg;
   }

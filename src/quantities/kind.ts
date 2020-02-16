@@ -1,4 +1,4 @@
-import Qty from "./constructor.js";
+import { Qty } from "./constructor.js";
 import { uniq } from "./utils.js";
 
 var KINDS = {
@@ -65,6 +65,6 @@ export function getKinds() {
   }));
 }
 
-Qty.prototype.kind = function() {
+export function kind(this: Qty) {
   return KINDS[this.signature.toString()];
 };
