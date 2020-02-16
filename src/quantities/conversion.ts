@@ -116,28 +116,30 @@ export function toFloat(this: Qty) {
  * Qty('1.146 MPa').toPrec('0.1 bar'); // returns 1.15 MPa
  *
  */
-export function toPrec(this: Qty, precQuantity) {
+export function toPrec(this: Qty, precQuantity: number | string | Qty) {
+  let precQty: Qty;
   if (isString(precQuantity)) {
-    precQuantity = new Qty(precQuantity);
-  }
-  if (isNumber(precQuantity)) {
-    precQuantity = new Qty(precQuantity + " " + this.units());
+    precQty = new Qty(precQuantity);
+  } else if (isNumber(precQuantity)) {
+    precQty = new Qty(precQuantity + " " + this.units());
+  } else {
+    precQty = precQuantity as Qty;
   }
 
   if (!this.isUnitless()) {
-    precQuantity = precQuantity.to(this.units());
+    precQuantity = precQty.to(this.units());
   }
-  else if (!precQuantity.isUnitless()) {
-    throwIncompatibleUnits(this.units(), precQuantity.units());
+  else if (!precQty.isUnitless()) {
+    throwIncompatibleUnits(this.units(), precQty.units());
   }
 
-  if (precQuantity.scalar === 0) {
+  if (precQty.scalar === 0) {
     throw new QtyError("Divide by zero");
   }
 
   var precRoundedResult = mulSafe(
-    Math.round(this.scalar / precQuantity.scalar),
-    precQuantity.scalar
+    Math.round(this.scalar / precQty.scalar),
+    precQty.scalar
   );
 
   return new Qty(precRoundedResult + this.units());

@@ -4,7 +4,8 @@
         "module": "commonjs",
         "outDir": "./dist",  
         "allowJs": true,  
-        "target": "es2015"
+        "target": "es2015",
+        "declaration": true
     },  
     "include": [  
         "./src/**/*"  

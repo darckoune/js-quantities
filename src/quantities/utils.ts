@@ -66,12 +66,6 @@ export function compareArray(array1, array2) {
   return true;
 }
 
-export function assign(target, properties) {
-  Object.keys(properties).forEach(function(key) {
-    target[key] = properties[key];
-  });
-}
-
 /**
  * Safely multiplies numbers while avoiding floating errors
  * like 0.1 * 0.1 => 0.010000000000000002

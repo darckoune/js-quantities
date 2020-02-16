@@ -5,7 +5,6 @@ import {
   UNITY_ARRAY
 } from "./definitions.js";
 import {
-  assign,
   compareArray,
   isNumber,
   isString,
@@ -27,7 +26,7 @@ export function defaultFormatter(scalar, units) {
 
 
 // returns the 'unit' part of the Unit object without the scalar
-export function units(this: Qty) {
+export function units(this: Qty): string {
   if (this._units !== undefined) {
     return this._units;
   }
@@ -59,7 +58,7 @@ export function units(this: Qty) {
  *
  * @returns {string} reparseable quantity as string
  */
-export function toString(this: Qty, targetUnitsOrMaxDecimalsOrPrec, maxDecimals?) {
+export function toString(this: Qty, targetUnitsOrMaxDecimalsOrPrec, maxDecimals?): string {
   var targetUnits;
   if (isNumber(targetUnitsOrMaxDecimalsOrPrec)) {
     targetUnits = this.units();
@@ -106,7 +105,7 @@ export function toString(this: Qty, targetUnitsOrMaxDecimalsOrPrec, maxDecimals?
  *
  * @returns {string} quantity as string
  */
-export function format(this: Qty, targetUnits, formatter) {
+export function format(this: Qty, targetUnits: string | Function, formatter: Function) {
   if (arguments.length === 1) {
     if (typeof targetUnits === "function") {
       formatter = targetUnits;

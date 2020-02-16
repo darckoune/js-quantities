@@ -19,7 +19,7 @@ unit =~ "mm"
 if you want to do a regexp on the unit string do this ...
 unit.units =~ /regexp/
 */
-export function isCompatible(this: Qty, other) {
+export function isCompatible(this: Qty, other): boolean {
   if (isString(other)) {
     return this.isCompatible(new Qty(other));
   }

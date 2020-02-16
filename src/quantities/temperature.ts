@@ -3,16 +3,16 @@ import { UNITY_ARRAY } from "./definitions.js";
 import QtyError from "./error.js";
 import { compareArray } from "./utils.js";
 
-export function isDegrees(this: Qty) {
+export function isDegrees(this: Qty): boolean {
   // signature may not have been calculated yet
   return (this.signature === null || this.signature === 400) &&
     this.numerator.length === 1 &&
     compareArray(this.denominator, UNITY_ARRAY) &&
-    (this.numerator[0].match(/<temp-[CFRK]>/) || this.numerator[0].match(/<(kelvin|celsius|rankine|fahrenheit)>/));
+    !!(this.numerator[0].match(/<temp-[CFRK]>/) || this.numerator[0].match(/<(kelvin|celsius|rankine|fahrenheit)>/));
 }
 
-export function isTemperature(this: Qty) {
-  return this.isDegrees() && this.numerator[0].match(/<temp-[CFRK]>/);
+export function isTemperature(this: Qty): boolean {
+  return this.isDegrees() && !!this.numerator[0].match(/<temp-[CFRK]>/);
 }
 
 export function subtractTemperatures(lhs,rhs) {
