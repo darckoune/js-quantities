@@ -127,7 +127,7 @@ export function toPrec(this: Qty, precQuantity: number | string | Qty) {
   }
 
   if (!this.isUnitless()) {
-    precQuantity = precQty.to(this.units());
+    precQty = precQty.to(this.units());
   }
   else if (!precQty.isUnitless()) {
     throwIncompatibleUnits(this.units(), precQty.units());
