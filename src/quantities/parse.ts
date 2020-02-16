@@ -1,6 +1,7 @@
 import { isString } from "./utils.js";
 import QtyError from "./error.js";
 import { PREFIX_MAP, UNIT_MAP } from "./definitions.js";
+import { Qty } from "./constructor";
 
 var SIGN = "[+-]";
 var INTEGER = "\\d+";
@@ -185,7 +186,7 @@ export function globalParse(value) {
   }
 
   try {
-    return this(value);
+    return new Qty(value);
   }
   catch (e) {
     return null;

@@ -3,11 +3,11 @@
         "moduleResolution": "node",
         "module": "commonjs",
         "outDir": "./dist",  
-        "allowJs": true,  
+        "allowJs": false,  
         "target": "es2015",
         "declaration": true
     },  
     "include": [  
-        "./src/**/*"  
+        "./src/**/*.ts"  
     ]  
 }

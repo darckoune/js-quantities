@@ -1,6 +1,5 @@
 import { UNITY_ARRAY } from "./definitions";
 import { unitSignature } from "./signature";
-import parse from "./parse";
 import QtyError from "./error";
 import { compareArray, isNumber, isString } from "./utils";
 
@@ -10,6 +9,10 @@ import * as temperature from './temperature';
 import * as predicates from './predicates';
 import * as operators from './operators';
 import * as format from './format';
+import * as kind from './kind';
+import * as definitions from './definitions';
+import * as parse from './parse';
+import * as utils from './utils';
 
 /**
  * Tests if a value is a Qty instance
@@ -52,10 +55,10 @@ export class Qty {
           ? initValue.denominator
           : UNITY_ARRAY;
     } else if (initUnits) {
-      parse.call(this, initUnits);
+      parse.default.call(this, initUnits);
       this.scalar = initValue;
     } else {
-      parse.call(this, initValue);
+      parse.default.call(this, initValue);
     }
 
     // math with temperatures is very limited
@@ -112,6 +115,19 @@ export class Qty {
   toString = format.toString;
   format = format.format;
   formatter = format.defaultFormatter;
+
+  kind = kind.kind;
+
+  // Global API as static functions
+
+  static getKinds = kind.getKinds;
+  static getAliases = definitions.getAliases;
+  static getUnits = definitions.getUnits;
+  static parse = parse.globalParse;
+  static mulSafe = utils.mulSafe;
+  static divSafe = utils.divSafe;
+  static swiftConverter = conversion.swiftConverter;
+  static Error = QtyError;
 }
 
 /**
